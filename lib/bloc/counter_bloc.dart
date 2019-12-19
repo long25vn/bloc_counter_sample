@@ -2,18 +2,18 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import './bloc.dart';
 
-class CounterBloc extends Bloc<CounterEvent, int> {
+class CounterBloc extends Bloc<CounterEvent, CounterState> {
   @override
-  int get initialState => 0;
+  CounterState get initialState => InitialCounterState();
 
   @override
-  Stream<int> mapEventToState(CounterEvent event) async* {
-      if (event is Tangbienso) {
-        yield currentState + event.number;
-      }
-  }
-
-  void tangso(int number) {
-    this.dispatch(Tangbienso(number));
+  Stream<CounterState> mapEventToState(
+    CounterEvent event,
+  ) async* {
+    if (event is Tangbienso){
+      yield CounterChange(currentState, soBandau: event.payload);
+    } else if (event is Doimau) {
+      yield CounterChange(currentState, redOrGreen: event.payload);
+    }
   }
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_app/bloc/counter_bloc.dart';
+import 'package:new_app/bloc/counter_event.dart';
+import 'package:new_app/bloc/counter_state.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -17,7 +18,6 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-
           primarySwatch: Colors.blue,
         ),
         home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -35,17 +35,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    final counterBloc = BlocProvider.of<CounterBloc>(context);
+    final CounterBloc counterBloc = BlocProvider.of<CounterBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -57,30 +50,32 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-            BlocBuilder<CounterBloc, int>(
+            BlocBuilder<CounterBloc, CounterState>(
               bloc: counterBloc,
-              builder: (context, number) {
-                return Text(
-                  '$number',
-                    style: TextStyle(fontSize: 40),
+              builder: (context, state) {
+                return Column(
+                  children: <Widget>[
+                    Text(
+                      '${state.soBandau}',
+                        style: TextStyle(fontSize: 40,
+                        color: state.redOrGreen ? Colors.red : Colors.green,
+                        ),
+                    ),
+                    RaisedButton(
+                      child: Text("Bloc khó hiểu thế"),
+                      onPressed: () => counterBloc.dispatch(Tangbienso(state.soBandau + 1)),
+                    ),
+                    RaisedButton(
+                      child: Text("Doi mau"),
+                      onPressed: () => counterBloc.dispatch(Doimau(!state.redOrGreen)),
+                    )
+                  ],
                 );
               },
             ),
-            RaisedButton(
-              child: Text("Bloc khó hiểu thế"),
-              onPressed: () => counterBloc.tangso(1),
-            )
+
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
